@@ -40,7 +40,7 @@ if not os.path.isfile(geofile): raise Exception('%s not found!' % geofile)
 os.chdir(builddir)
 if not os.path.isdir('Results'): 
     os.mkdir('Results')
-   
+
 # build myExperiment
 resdir = os.path.join(builddir, 'Results', resdirname)
 if os.path.isdir(resdir): raise Exception('%s already exists' % resdir)
