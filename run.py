@@ -37,12 +37,14 @@ if not os.path.isfile(parfile): raise Exception('%s not found!' % parfile)
 if not os.path.isfile(geofile): raise Exception('%s not found!' % geofile)
 
 # chdir to build  
-os.chdir(builddir)
-if not os.path.isdir('Results'): 
-    os.mkdir('Results')
-
+#os.chdir(builddir)
+#if not os.path.isdir('Results'): 
+#    os.mkdir('Results')
+#os.chdir('..') 
+   
 # build myExperiment
-resdir = os.path.join(builddir, 'Results', resdirname)
+#resdir = os.path.join(builddir, 'Results', resdirname)
+resdir = os.path.join('Results', resdirname)
 if os.path.isdir(resdir): raise Exception('%s already exists' % resdir)
 print 'Creating %s' % resdir
 os.mkdir(resdir)

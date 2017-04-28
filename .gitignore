@@ -20,3 +20,4 @@ Test.*
 .vscode/
 !CMakeLists.txt
 Results/
+
