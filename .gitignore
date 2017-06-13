@@ -20,4 +20,6 @@ Test.*
 .vscode/
 !CMakeLists.txt
 Results/
+MemoryProcess*.txt
+
 
