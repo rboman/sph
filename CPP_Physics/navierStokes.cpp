@@ -13,7 +13,7 @@
 *Output:
 *- densityDerivative: derivative of the density of particleID
 */
-double continuity(int particleID, std::vector<int>& neighbors, std::vector<double>& kernelGradients,Field* currentField)
+double continuity(int particleID, std::vector<int> &neighbors, std::vector<double> &kernelGradients, Field *currentField)
 {
     double densityDerivative = 0.0;
     double scalarProduct;
@@ -23,14 +23,12 @@ double continuity(int particleID, std::vector<int>& neighbors, std::vector<doubl
         //Compute scalar product present in the formula
         for (int j = 0; j <= 2; j++)
         {
-            scalarProduct += (currentField->speed[j][particleID] - currentField->speed[j][neighbors[i]])
-            * kernelGradients[3*i + j];
+            scalarProduct += (currentField->speed[j][particleID] - currentField->speed[j][neighbors[i]]) * kernelGradients[3 * i + j];
         }
-        densityDerivative += currentField->mass[neighbors[i]]  * scalarProduct;
+        densityDerivative += currentField->mass[neighbors[i]] * scalarProduct;
     }
     return densityDerivative;
 }
-
 
 /*
 *Input:
@@ -42,7 +40,7 @@ double continuity(int particleID, std::vector<int>& neighbors, std::vector<doubl
 *Decscription:
 * Compute the speed derivative related to particleID and store it in the speedDerivative vector
 */
-void momentum(int particleID, std::vector<int>& neighbors, std::vector<double>& kernelGradients,Field* currentField , Parameter* parameter, std::vector<double>& speedDerivative, std::vector<double> &viscosity)
+void momentum(int particleID, std::vector<int> &neighbors, std::vector<double> &kernelGradients, Field *currentField, Parameter *parameter, std::vector<double> &speedDerivative, std::vector<double> &viscosity)
 {
     viscosity.resize(neighbors.size());
     viscosityComputation(particleID, neighbors, currentField, parameter, viscosity);
@@ -51,25 +49,23 @@ void momentum(int particleID, std::vector<int>& neighbors, std::vector<double>& 
     {
         for (int i = 0; i < neighbors.size(); i++)
         {
-            speedDerivative[3*particleID + j] -= currentField->mass[neighbors[i]]
-            * ( currentField->pressure[neighbors[i]] / ((currentField->density[neighbors[i]]*(currentField->density[neighbors[i]])))
-            + currentField->pressure[particleID] / ((currentField->density[particleID]*(currentField->density[particleID])))
-            + viscosity[i] )
-            * kernelGradients[3*i + j];
+            speedDerivative[3 * particleID + j] -= currentField->mass[neighbors[i]] * (currentField->pressure[neighbors[i]] / ((currentField->density[neighbors[i]] * (currentField->density[neighbors[i]]))) + currentField->pressure[particleID] / ((currentField->density[particleID] * (currentField->density[particleID]))) + viscosity[i]) * kernelGradients[3 * i + j];
         }
     }
-    speedDerivative[3*particleID + 2] -= parameter->g; // Gravitational acceleration
+    speedDerivative[3 * particleID + 2] -= parameter->g; // Gravitational acceleration
 }
 
-void xsphCorrection(int particleID, std::vector<int> &neighbors, std::vector<double>& kernelValues, Field* currentField, Parameter* parameter, std::vector<double>& positionDerivative){
+void xsphCorrection(int particleID, std::vector<int> &neighbors, std::vector<double> &kernelValues, Field *currentField, Parameter *parameter, std::vector<double> &positionDerivative)
+{
 
-    for (int j = 0; j <= 2; j++){
+    for (int j = 0; j <= 2; j++)
+    {
         double particleSpeed = currentField->speed[j][particleID];
-        positionDerivative[3*particleID + j] = particleSpeed;
+        positionDerivative[3 * particleID + j] = particleSpeed;
 
-        for (int i = 0; i < neighbors.size(); i++){
-            positionDerivative[3*particleID + j] += parameter->epsilonXSPH * (currentField->speed[j][neighbors[i]] - particleSpeed)
-            * kernelValues[i] * currentField->mass[neighbors[i]] / currentField->density[neighbors[i]];
+        for (int i = 0; i < neighbors.size(); i++)
+        {
+            positionDerivative[3 * particleID + j] += parameter->epsilonXSPH * (currentField->speed[j][neighbors[i]] - particleSpeed) * kernelValues[i] * currentField->mass[neighbors[i]] / currentField->density[neighbors[i]];
         }
     }
 }
