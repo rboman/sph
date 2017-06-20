@@ -298,10 +298,9 @@ void findNeighbors(int particleID, std::vector<double> (&pos)[3], double kh,
 // Gives the list of the surrounding boxes
 void surroundingBoxes(int box, int nBoxesX, int nBoxesY, int nBoxesZ, std::vector<int> &surrBoxes)
 {
-    int index_x, index_y, index_z;
-    index_x = box / (nBoxesZ * nBoxesY);
-    index_y = (box - index_x * nBoxesZ * nBoxesY) / nBoxesZ;
-    index_z = box - index_x * nBoxesZ * nBoxesY - index_y * nBoxesZ;
+    int index_x = box / (nBoxesZ * nBoxesY);
+    int index_y = (box - index_x * nBoxesZ * nBoxesY) / nBoxesZ;
+    int index_z = box - index_x * nBoxesZ * nBoxesY - index_y * nBoxesZ;
 
     std::vector<int> tab(6, 1);   // Initialized to 1
     std::vector<int> value(9, 0); // Initialized to 0
@@ -314,42 +313,23 @@ void surroundingBoxes(int box, int nBoxesX, int nBoxesY, int nBoxesZ, std::vecto
 
     // Filling of the tab vector.
     if (index_z > 0)
-    {
         tab[0] = 0;
-    }
     if (index_z < nBoxesZ - 1)
-    {
         tab[1] = 2;
-    }
     if (index_x > 0)
-    {
-        tab[4] = 0;
-    }
+        tab[4] = 0; 
     if (index_x < nBoxesX - 1)
-    {
         tab[5] = 2;
-    }
     if (index_y > 0)
-    {
         tab[2] = 0;
-    }
     if (index_y < nBoxesY - 1)
-    {
         tab[3] = 2;
-    }
 
     // Finding the neighbors
     for (int k = tab[4]; k <= tab[5]; k++)
-    {
         for (int j = tab[2]; j <= tab[3]; j++)
-        {
             for (int i = tab[0]; i <= tab[1]; i++)
-            {
                 surrBoxes.push_back(box + value[i] + value[j + 3] + value[k + 6]);
-            }
-        }
-    }
-    return;
 }
 
 // Gives the distance to the square between two particles

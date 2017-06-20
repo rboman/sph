@@ -21,7 +21,7 @@ std::clock_t getTime()
 *Decscription:
 *Copy ALL (!!) data of a field structure and give the right size to time varying data
 */
-void copyField(Field *sourceField, Field *copiedField)
+void copyField(Field *sourceField, Field *copiedField) // [RB] copy constructeur de Field
 {
     int nTotal = sourceField->nTotal;
     for (int i = 0; i < 3; i++)

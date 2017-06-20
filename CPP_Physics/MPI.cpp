@@ -508,7 +508,8 @@ void shareOverlap(Field &field, SubdomainInfo &subdomainInfo)
     if (nTasks > 1)
     {
         if (procID == 0)
-        { // No left neighbor domain
+        { 
+            // No left neighbor domain
             // inner domain: [l[0] , u[0] - 2*boxSize[
             // right edge: [u[0] - 2*boxSize , u[0] - boxSize[
             // right halo: [u[0] - boxSize , u[0]]
@@ -541,7 +542,8 @@ void shareOverlap(Field &field, SubdomainInfo &subdomainInfo)
             subdomainInfo.endingParticle = field.pos[0].size() - sizeRecvOverlapR - 1;
         }
         else if (procID == nTasks - 1)
-        { // No right neighbor domain
+        { 
+            // No right neighbor domain
             // left halo: [l[0] , l[0] + boxSize[
             // left edge: [l[0] + boxSize , l[0] + 2*boxSize[
             // inner domain: [l[0] + 2*boxSize , u[0][
@@ -592,7 +594,8 @@ void shareOverlap(Field &field, SubdomainInfo &subdomainInfo)
             subdomainInfo.endingParticle = field.pos[0].size() - 1;
         }
         else
-        { // Domain in the middle
+        { 
+            // Domain in the middle
             // left halo: [l[0] , l[0] + boxSize[
             // left edge: [l[0] + boxSize , l[0] + 2*boxSize[
             // inner domain: [l[0] + 2*boxSize , u[0] - 2*boxSize[

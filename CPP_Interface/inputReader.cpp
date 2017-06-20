@@ -29,7 +29,8 @@ enum geomType
 */
 Error readBrick(int type, std::ifstream *inFile, Parameter *parameter, std::vector<double> *posFree,
                 std::vector<double> *posMoving, std::vector<double> *posFixed,
-                std::vector<double> *volVectorFree, std::vector<double> *volVectorFixed, std::vector<double> *volVectorMoving, std::vector<int> *typeFree,
+                std::vector<double> *volVectorFree, std::vector<double> *volVectorFixed, 
+                std::vector<double> *volVectorMoving, std::vector<int> *typeFree,
                 std::vector<int> *typeFixed, std::vector<int> *typeMoving, int *numberMovingBoundaries)
 {
     std::string buf;
@@ -246,7 +247,7 @@ Error readGeometry(std::string filename, Field *currentField, Parameter *paramet
     char valueArray[1024];
     int cnt = 0;
     std::getline(inFile, buf);
-    if (buf != "#GEOM1")
+    if (buf != "#GEOM1") // [RB] est-ce utile?
     {
         std::cout << "#GEOM1 identifier could not be read. Wrong geometry file.\n"
                   << std::endl;
@@ -261,16 +262,17 @@ Error readGeometry(std::string filename, Field *currentField, Parameter *paramet
             switch (buf[0])
             {
             case '%':
-                continue;
+                continue; // [RB] inutile
                 break;
             case '#':
                 buf.erase(0, 1);
                 if (buf == "domsz")
                 {
+                    // ux,uy,uz
                     while (cnt != N_UL && inFile.peek() != std::ifstream::traits_type::eof())
                     {
                         std::getline(inFile, buf);
-                        if (1 == sscanf(buf.c_str(), "%*[^#]#%s", valueArray))
+                        if (1 == sscanf(buf.c_str(), "%*[^#]#%s", valueArray)) // on arrive au '#' suivant sans avoir tout lu
                         {
                             std::cout << "Missing a domain value.\n"
                                       << std::endl;
@@ -278,7 +280,7 @@ Error readGeometry(std::string filename, Field *currentField, Parameter *paramet
                         }
                         if (1 == sscanf(buf.c_str(), "%*[^=]=%s", valueArray))
                         {
-                            currentField->u[cnt] = atof(valueArray);
+                            currentField->u[cnt] = atof(valueArray); // [RB] !! aucune verification des noms de variables!
                             ++cnt;
                         }
                         else
@@ -290,6 +292,7 @@ Error readGeometry(std::string filename, Field *currentField, Parameter *paramet
                                   << std::endl;
                         return geometryError;
                     }
+                    // lx,ly,lz
                     cnt = 0;
                     while (cnt != N_UL && inFile.peek() != std::ifstream::traits_type::eof())
                     {
@@ -317,27 +320,27 @@ Error readGeometry(std::string filename, Field *currentField, Parameter *paramet
                 }
                 else if (buf == "brick")
                 {
-                    if (readBrick(cube, &inFile, parameter,
-                                  &posFree, &posMoving, &posFixed,
-                                  &volVectorFree, &volVectorFixed, &volVectorMoving, &typeFree, &typeFixed, &typeMoving, &numberMovingBoundaries) == geometryError)
+                    if (readBrick(cube, &inFile, parameter, &posFree, &posMoving, &posFixed,
+                                  &volVectorFree, &volVectorFixed, &volVectorMoving, &typeFree,
+                                  &typeFixed, &typeMoving, &numberMovingBoundaries) == geometryError)
                     {
                         return geometryError;
                     }
                 }
                 else if (buf == "cylin")
                 {
-                    if (readBrick(cylinder, &inFile, parameter,
-                                  &posFree, &posMoving, &posFixed,
-                                  &volVectorFree, &volVectorFixed, &volVectorMoving, &typeFree, &typeFixed, &typeMoving, &numberMovingBoundaries) == geometryError)
+                    if (readBrick(cylinder, &inFile, parameter, &posFree, &posMoving, &posFixed,
+                                  &volVectorFree, &volVectorFixed, &volVectorMoving, &typeFree,
+                                  &typeFixed, &typeMoving, &numberMovingBoundaries) == geometryError)
                     {
                         return geometryError;
                     }
                 }
                 else if (buf == "spher")
                 {
-                    if (readBrick(sphere, &inFile, parameter,
-                                  &posFree, &posMoving, &posFixed,
-                                  &volVectorFree, &volVectorFixed, &volVectorMoving, &typeFree, &typeFixed, &typeMoving, &numberMovingBoundaries) == geometryError)
+                    if (readBrick(sphere, &inFile, parameter, &posFree, &posMoving, &posFixed,
+                                  &volVectorFree, &volVectorFixed, &volVectorMoving, &typeFree,
+                                  &typeFixed, &typeMoving, &numberMovingBoundaries) == geometryError)
                     {
                         return geometryError;
                     }
@@ -350,7 +353,7 @@ Error readGeometry(std::string filename, Field *currentField, Parameter *paramet
                         return geometryError;
                     }
                 }
-                else if (buf == "END_G")
+                else if (buf == "END_G") // [RB] tag pas tres utile
                 {
                     // Number of particles
                     currentField->nFree = posFree.size() / 3;
@@ -389,7 +392,6 @@ Error readGeometry(std::string filename, Field *currentField, Parameter *paramet
                 std::cout << "Wrong tag in the geometry file.\n"
                           << std::endl;
                 return geometryError;
-                continue;
             }
         }
     }
@@ -403,21 +405,15 @@ Read the geometry and make all particle initializations
 */
 Error initializeField(std::string filename, Field *currentField, Parameter *parameter)
 {
-
-    Error errorFlag = noError;
     std::vector<double> volVector;
-    errorFlag = readGeometry(filename, currentField, parameter, &volVector);
+    Error errorFlag = readGeometry(filename, currentField, parameter, &volVector);
     if (errorFlag != noError)
-    {
         return errorFlag;
-    }
 
     // Checking consistency of user datas
     errorFlag = consistencyField(currentField);
     if (errorFlag != noError)
-    {
         return errorFlag;
-    }
 
     // Initialisation of the particles
     speedInit(currentField, parameter);
@@ -443,7 +439,7 @@ Error readParameter(std::string filename, Parameter *parameter)
     std::ifstream inFile(filename);
     std::string buf;
     std::getline(inFile, buf);
-    if (buf != "#PARA1")
+    if (buf != "#PARA1") // [RB] est-ce vraiment utile?
     {
         std::cout << "Wrong parameter file type.\n"
                   << std::endl;
@@ -467,15 +463,13 @@ Error readParameter(std::string filename, Parameter *parameter)
                 while (cnt != N_PARAM && inFile.peek() != std::ifstream::traits_type::eof())
                 {
                     std::getline(inFile, buf);
-                    if (1 == sscanf(buf.c_str(), "%*[^=]=%s", valueArray))
+                    if (1 == sscanf(buf.c_str(), "%*[^=]=%s", valueArray)) // [RB] !! on ignore le nom de la variable !!
                     {
                         // Numerical parameters
-                        if (cnt == 0)
+                        if (cnt == 0) // le 1er parametre doit etre "kernel=" !!
                         {
                             if ((0 <= atoi(valueArray)) && (atoi(valueArray) < NB_KERNEL_VALUE))
-                            {
                                 parameter->kernel = (Kernel)atoi(valueArray);
-                            }
                             else
                             {
                                 std::cout << "Invalid Kernel.\n"
@@ -483,17 +477,15 @@ Error readParameter(std::string filename, Parameter *parameter)
                                 return parameterError;
                             }
                         }
-                        if (cnt == 1)
+                        if (cnt == 1) // kh
                         {
                             parameter->kh = atof(valueArray);
                             parameter->h = gethFromkh(parameter->kernel, parameter->kh);
                         }
-                        if (cnt == 2)
+                        if (cnt == 2) // integrationMethod
                         {
                             if ((0 <= atoi(valueArray)) && (atoi(valueArray) < NB_INTEGRATION_VALUE))
-                            {
                                 parameter->integrationMethod = (IntegrationMethod)atoi(valueArray);
-                            }
                             else
                             {
                                 std::cout << "Invalid integrationMethod.\n"
@@ -501,14 +493,12 @@ Error readParameter(std::string filename, Parameter *parameter)
                                 return parameterError;
                             }
                         }
-                        if (cnt == 3)
+                        if (cnt == 3) // theta
                             parameter->theta = atof(valueArray);
-                        if (cnt == 4)
+                        if (cnt == 4) // AdaptativeTimeStep
                         {
                             if ((0 <= atoi(valueArray)) && (atoi(valueArray) < NB_ADAPTATIVE_VALUE))
-                            {
                                 parameter->adaptativeTimeStep = (AdaptativeTimeStep)atoi(valueArray);
-                            }
                             else
                             {
                                 std::cout << "Invalid adaptativeTimeStep.\n"
@@ -516,20 +506,18 @@ Error readParameter(std::string filename, Parameter *parameter)
                                 return parameterError;
                             }
                         }
-                        if (cnt == 5)
+                        if (cnt == 5) // k
                             parameter->k = atof(valueArray);
-                        if (cnt == 6)
+                        if (cnt == 6) // T
                             parameter->T = atof(valueArray);
 
                         // Physical Parameters
-                        if (cnt == 7)
+                        if (cnt == 7) // densityRef
                             parameter->densityRef = atof(valueArray);
-                        if (cnt == 8)
+                        if (cnt == 8) // densityInitMethod
                         {
                             if ((0 <= atoi(valueArray)) && (atoi(valueArray) < NB_DENSITYINIT_VALUE))
-                            {
                                 parameter->densityInitMethod = (DensityInitMethod)atoi(valueArray);
-                            }
                             else
                             {
                                 std::cout << "Invalid densityInitMethod.\n"

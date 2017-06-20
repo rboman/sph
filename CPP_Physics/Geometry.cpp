@@ -388,8 +388,10 @@ int interpBathymetry(double *sTrue, int *n, double xa, double xb, double ya, dou
     return nFreeTotal;
 }
 
-Error meshBathymetry(char *batFile, int bathType, int numberGroundParticles, double height0, double hFreeSurface, double s, std::vector<double> &posFree, std::vector<double> &posFixed, int *nPartFree, int *nPartFixed, double *volPart,
-                     double perturbation, bool stack)
+Error meshBathymetry(char *batFile, int bathType, int numberGroundParticles, double height0,
+                     double hFreeSurface, double s, std::vector<double> &posFree,
+                     std::vector<double> &posFixed, int *nPartFree, int *nPartFixed,
+                     double *volPart, double perturbation, bool stack)
 {
 
     double *bath;

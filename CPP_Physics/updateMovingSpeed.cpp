@@ -156,8 +156,12 @@ void updateMovingSpeed(Field *field, Parameter *parameter, double t, double k, i
 void updateMovingPos(Field *field, Parameter *parameter, double t, double k, int particleID)
 {
     int movingBoundaryID = field->type[particleID] - 2;
-    double mD[3] = {parameter->movingDirection[0][movingBoundaryID], parameter->movingDirection[1][movingBoundaryID], parameter->movingDirection[2][movingBoundaryID]};
-    double rC[3] = {parameter->rotationCenter[0][movingBoundaryID], parameter->rotationCenter[1][movingBoundaryID], parameter->rotationCenter[2][movingBoundaryID]};
+    double mD[3] = {parameter->movingDirection[0][movingBoundaryID],
+                    parameter->movingDirection[1][movingBoundaryID],
+                    parameter->movingDirection[2][movingBoundaryID]};
+    double rC[3] = {parameter->rotationCenter[0][movingBoundaryID],
+                    parameter->rotationCenter[1][movingBoundaryID],
+                    parameter->rotationCenter[2][movingBoundaryID]};
     double charactTime = parameter->charactTime[movingBoundaryID];
     double amplitude = parameter->amplitude[movingBoundaryID];
     PosLaw posLaw = (PosLaw)parameter->posLaw[movingBoundaryID];
@@ -201,9 +205,7 @@ void updateMovingPos(Field *field, Parameter *parameter, double t, double k, int
         double deltaAngle = angleComputation(amplitude, charactTime, angleLaw, t + k) - angleComputation(amplitude, charactTime, angleLaw, t);
         quaternionRotation(mD, deltaAngle, pos);
         for (int i = 0; i < 3; i++)
-        {
             field->pos[i][particleID] = pos[i] + rC[i];
-        }
     }
     break;
     }

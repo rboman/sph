@@ -194,7 +194,7 @@ void matlab(std::string const &filename,
     f << "Computer Name : None" << std::endl; // To be implemented
     f << "Username : None" << std::endl; // To be implemented
 #else
-#error "Cannot define GetMemory( ) or GetMemoryProcessPeak( ) or GetMemoryProcess() for an unknown OS."
+#error "Cannot define GetMemory( ) or GetMemoryProcessPeak( ) or GetMemoryProcess() for an unknown OS." // [RB] ?????
 #endif
     f << "File Used : " << geometryFilename << "   &   " << parameterFilename << std::endl;
     f << std::endl;

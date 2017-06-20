@@ -36,7 +36,7 @@ enum ViscosityModel
     NB_VISCOSITY_VALUE
 };
 
-// integrationMethod = euler ou RK2
+// IntegrationMethod = euler ou RK2
 enum IntegrationMethod
 {
     euler,
@@ -52,7 +52,7 @@ enum AdaptativeTimeStep
     NB_ADAPTATIVE_VALUE
 };
 
-// densityInitMethod = hydrosatic, etc.
+// DensityInitMethod = hydrosatic, etc.
 enum DensityInitMethod
 {
     hydrostatic,
@@ -60,7 +60,7 @@ enum DensityInitMethod
     NB_DENSITYINIT_VALUE
 };
 
-// stateEquationMethod = quasiIncompressible, perfectGas, etc.
+// StateEquationMethod = quasiIncompressible, perfectGas, etc.
 enum StateEquationMethod
 {
     quasiIncompressible,
@@ -68,14 +68,14 @@ enum StateEquationMethod
     NB_STATEEQUATION_VALUE
 };
 
-// massInitMethod = violeau2012 (all particles have same volumes), etc.
+// MassInitMethod = violeau2012 (all particles have same volumes), etc.
 enum MassInitMethod
 {
     violeau2012,
     NB_MASSINIT_VALUE
 };
 
-// speedLaw = Will dictate the behaviour of moving boundaries: constant, sine, exponential
+// PosLaw = Will dictate the behaviour of moving boundaries: constant, sine, exponential
 enum PosLaw
 {
     constant,
@@ -101,6 +101,7 @@ enum Matlab
     fullMatlab,
     NB_MATLAB_VALUE
 };
+
 enum Paraview
 {
     noParaview,
@@ -127,7 +128,23 @@ enum BathType
 
 struct Parameter
 {
-    double kh, h, k, T, densityRef, B, gamma, g, writeInterval, c, alpha, beta, epsilon, molarMass, temperature, theta, epsilonXSPH;
+    double kh;
+    double h;
+    double k;
+    double T;
+    double densityRef;
+    double B;
+    double gamma;
+    double g;
+    double writeInterval;
+    double c;
+    double alpha;
+    double beta;
+    double epsilon;
+    double molarMass;
+    double temperature;
+    double theta;
+    double epsilonXSPH;
     Kernel kernel;
     ViscosityModel viscosityModel;
     IntegrationMethod integrationMethod;
@@ -139,7 +156,8 @@ struct Parameter
     std::vector<int> posLaw;
     std::vector<int> angleLaw;
     std::vector<double> charactTime;
-    std::vector<double> movingDirection[3], rotationCenter[3];
+    std::vector<double> movingDirection[3];
+    std::vector<double> rotationCenter[3];
     std::vector<double> amplitude;
     Matlab matlab;
     Paraview paraview;
@@ -147,7 +165,10 @@ struct Parameter
 
 struct Field
 {
-    int nFree, nFixed, nMoving, nTotal;
+    int nFree; 
+    int nFixed; 
+    int nMoving; 
+    int nTotal;
     double l[3];
     double u[3];
     double nextK = 0.0;
@@ -162,9 +183,12 @@ struct Field
 
 struct SubdomainInfo
 {
-    int procID, nTasks;
-    int startingBox, endingBox;
-    int startingParticle, endingParticle;
+    int procID;
+    int nTasks;
+    int startingBox; 
+    int endingBox;
+    int startingParticle; 
+    int endingParticle;
     double boxSize;
 };
 

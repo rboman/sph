@@ -117,10 +117,14 @@ a list with the box ID of the boxes that are adjacent to this box
 *Description:
 * Knowing the field (currentField), computes the density and velocity derivatives and store them in vectors
 */
-void derivativeComputation(Field *currentField, Parameter *parameter, SubdomainInfo &subdomainInfo,
-                           std::vector<std::vector<int>> &boxes, std::vector<std::vector<int>> &surrBoxesAll,
-                           std::vector<double> &currentDensityDerivative, std::vector<double> &currentSpeedDerivative,
-                           std::vector<double> &currentPositionDerivative, bool midPoint)
+void derivativeComputation(Field *currentField, Parameter *parameter,
+                           SubdomainInfo &subdomainInfo,
+                           std::vector<std::vector<int>> &boxes,
+                           std::vector<std::vector<int>> &surrBoxesAll,
+                           std::vector<double> &currentDensityDerivative,
+                           std::vector<double> &currentSpeedDerivative,
+                           std::vector<double> &currentPositionDerivative,
+                           bool midPoint)
 {
     // Neighbors vectors (declaration outside)
     std::vector<int> neighbors;
@@ -174,23 +178,27 @@ a list with the box ID of the boxes that are adjacent to this box
 * Knowing the field at time t(currentField), computes the field at time t+k with euler integration method and store it in structure nextField
 */
 void timeIntegration(Field *currentField, Field *nextField, Parameter *parameter,
-                     SubdomainInfo &subdomainInfo, std::vector<std::vector<int>> &boxes, std::vector<std::vector<int>> &surrBoxesAll,
+                     SubdomainInfo &subdomainInfo, std::vector<std::vector<int>> &boxes,
+                     std::vector<std::vector<int>> &surrBoxesAll,
                      double t, double k)
 {
-    std::vector<double> currentSpeedDerivative;
+    std::vector<double> currentSpeedDerivative;    // [RB] ces vecteurs sont alloués à chaque pas de temps => ils pourraient être conservés
     std::vector<double> currentPositionDerivative; // For XSPH method
     std::vector<double> currentDensityDerivative;
-    currentSpeedDerivative.assign(3 * currentField->nTotal, 0.0);
+    currentSpeedDerivative.assign(3 * currentField->nTotal, 0.0); // [RB] peut etre fait lors de la construction
     currentPositionDerivative.assign(3 * currentField->nTotal, 0.0);
     currentDensityDerivative.assign(currentField->nTotal, 0.0);
     // CPU time information
-    derivativeComputation(currentField, parameter, subdomainInfo, boxes, surrBoxesAll, currentDensityDerivative, currentSpeedDerivative, currentPositionDerivative, false);
+    derivativeComputation(currentField, parameter, subdomainInfo, boxes, surrBoxesAll,
+                          currentDensityDerivative, currentSpeedDerivative,
+                          currentPositionDerivative, false);
 
     switch (parameter->integrationMethod)
     {
     case euler:
     {
-        eulerUpdate(currentField, nextField, parameter, subdomainInfo, currentDensityDerivative, currentSpeedDerivative, currentPositionDerivative, t, k);
+        eulerUpdate(currentField, nextField, parameter, subdomainInfo, currentDensityDerivative,
+                    currentSpeedDerivative, currentPositionDerivative, t, k);
     }
     break;
 
@@ -198,24 +206,27 @@ void timeIntegration(Field *currentField, Field *nextField, Parameter *parameter
     {
         double kMid = 0.5 * k / parameter->theta;
         Field midFieldInstance;
-        Field *midField = &midFieldInstance;
+        Field *midField = &midFieldInstance; // [RB] inutile
         std::vector<double> midSpeedDerivative;
         std::vector<double> midPositionDerivative;
         std::vector<double> midDensityDerivative;
-        midSpeedDerivative.assign(3 * currentField->nTotal, 0.0);
+        midSpeedDerivative.assign(3 * currentField->nTotal, 0.0); // [RB] meme remarques que pour "currentSpeedDerivative", etc
         midPositionDerivative.assign(3 * currentField->nTotal, 0.0);
         midDensityDerivative.assign(currentField->nTotal, 0.0);
         copyField(currentField, midField);
         // Storing midpoint in midField
-        eulerUpdate(currentField, midField, parameter, subdomainInfo, currentDensityDerivative, currentSpeedDerivative, currentPositionDerivative, t, kMid);
+        eulerUpdate(currentField, midField, parameter, subdomainInfo, currentDensityDerivative,
+                    currentSpeedDerivative, currentPositionDerivative, t, kMid);
         // Share the mid point
         shareRKMidpoint(*midField, subdomainInfo);
         // Compute derivatives at midPoint
-        derivativeComputation(midField, parameter, subdomainInfo, boxes, surrBoxesAll, midDensityDerivative, midSpeedDerivative, midPositionDerivative, true);
+        derivativeComputation(midField, parameter, subdomainInfo, boxes, surrBoxesAll,
+                              midDensityDerivative, midSpeedDerivative, midPositionDerivative, true);
         // Update
-        RK2Update(currentField, midField, nextField, parameter, subdomainInfo, currentDensityDerivative, currentSpeedDerivative, currentPositionDerivative, midDensityDerivative, midSpeedDerivative, midPositionDerivative, t, k);
+        RK2Update(currentField, midField, nextField, parameter, subdomainInfo, currentDensityDerivative,
+                  currentSpeedDerivative, currentPositionDerivative, midDensityDerivative,
+                  midSpeedDerivative, midPositionDerivative, t, k);
     }
     break;
     }
-    return;
 }

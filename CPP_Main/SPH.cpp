@@ -15,7 +15,7 @@ std::clock_t startExperimentTimeClock;
 *- argv[2]: name of the input geometry file (mandatory)
 *- argv[3]: name of the output result (optional, default name is "result.txt")
 *
-*Decscription:
+*Description:
 *Run the SPH solver for a given geometry and a given set of parameter and write the result in an output file.
 */
 int main(int argc, char *argv[])
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
                   << std::endl;
         errorFlag = argumentError;
         MPI_Finalize();
-        return errorFlag;
+        return errorFlag; // [RB] tester des exceptions?
     }
     else if (argc < 4) // Use default name for the experiment (result)
     {
@@ -66,20 +66,20 @@ int main(int argc, char *argv[])
 
     // Main variables declaration
     Parameter parameterInstance;
-    Parameter *parameter = &parameterInstance;
+    Parameter *parameter = &parameterInstance; // [RB] inutile
     Field currentFieldInstance;
-    Field *currentField = &currentFieldInstance;
+    Field *currentField = &currentFieldInstance; // [RB] inutile
     Field nextFieldInstance;
-    Field *nextField = &nextFieldInstance;
-    Field globalFieldInstance;				   // Used by node 0 only
-    Field *globalField = &globalFieldInstance; // Used by node 0 only
+    Field *nextField = &nextFieldInstance;     // [RB] inutile
+    Field globalFieldInstance;                 // Used by node 0 only
+    Field *globalField = &globalFieldInstance; // Used by node 0 only // [RB] inutile
 
     // Reads parameters (each process) and geometry (process 0) and checks their consistency
     errorFlag = readParameter(parameterFilename, parameter);
     if (errorFlag != noError)
     {
         MPI_Finalize();
-        return errorFlag;
+        return errorFlag; // [RB] tester des exceptions?
     }
     if (subdomainInfo.procID == 0)
     {
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
     if (errorFlag != noError)
     {
         MPI_Finalize();
-        return errorFlag;
+        return errorFlag; // [RB] tester des exceptions?
     }
 
     // Writes the initial configuration
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
     if (errorFlag != noError)
     {
         MPI_Finalize();
-        return errorFlag;
+        return errorFlag; // [RB] tester des exceptions?
     }
 
     // Declares the box mesh and determines their adjacent relations variables
@@ -120,9 +120,8 @@ int main(int argc, char *argv[])
 
     // Initialization done
     if (subdomainInfo.procID == 0)
-    {
-        std::cout << "Done.\n" << std::endl;
-    }
+        std::cout << "Done.\n"
+                  << std::endl;
 
     // Information on the simulation
     if (subdomainInfo.procID == 0)
@@ -165,7 +164,8 @@ int main(int argc, char *argv[])
         // ---
 
         // Solve the time step
-        timeIntegration(currentField, nextField, parameter, subdomainInfo, boxes, surrBoxesAll, currentTime, parameter->k);
+        timeIntegration(currentField, nextField, parameter, subdomainInfo, boxes,
+                        surrBoxesAll, currentTime, parameter->k);
         currentTime += parameter->k;
 
         // Adaptive time step
